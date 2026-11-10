@@ -6,6 +6,10 @@ A server-side Fabric mod for Minecraft 26.3 that connects your server to Discord
 - Staff configure channels and roles with `/sentinel` in Discord.
 - `/sban <player> <days> <reason>` handles timed bans, Discord logs and a banned role. The role is removed when the ban expires or the player is pardoned.
 
+## Download
+
+[Download Sentinel 1.0](https://github.com/IDontCaramel/Sentinel/releases/download/v1.0/sentinel-1.0.jar) for Minecraft 26.3. Requires Java 25.
+
 ## Setup
 
 1. Install Fabric Loader and [Fabric API](https://modrinth.com/mod/fabric-api) for Minecraft 26.3.
