@@ -1,0 +1,95 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'com.gradleup.shadow' version '9.6.1'
+}
+
+base {
+	archivesName = 'sentinel'
+}
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	// Libraries packed (and relocated) into the mod jar.
+	bundle
+	implementation.extendsFrom bundle
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Optional: only used when LuckPerms is installed, which ships this API itself.
+	compileOnly "net.luckperms:api:${project.luckperms_api_version}"
+
+	bundle("net.dv8tion:JDA:${project.jda_version}") {
+		// Voice support is not needed.
+		exclude module: 'opus-java'
+		exclude module: 'tink'
+		// Minecraft already ships SLF4J.
+		exclude group: 'org.slf4j'
+	}
+	bundle "com.fasterxml.jackson.dataformat:jackson-dataformat-toml:${project.jackson_version}"
+	// Not relocated: the driver finds its native library by package path.
+	bundle("org.xerial:sqlite-jdbc:${project.sqlite_version}") {
+		exclude group: 'org.slf4j'
+	}
+
+	testImplementation platform("org.junit:junit-bom:${project.junit_version}")
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+shadowJar {
+	configurations = [project.configurations.bundle]
+	archiveClassifier = ''
+	def prefix = 'dev.sentinel.shadow'
+	relocate 'net.dv8tion', "${prefix}.jda"
+	relocate 'com.fasterxml', "${prefix}.fasterxml"
+	relocate 'okhttp3', "${prefix}.okhttp3"
+	relocate 'okio', "${prefix}.okio"
+	relocate 'kotlin', "${prefix}.kotlin"
+	relocate 'com.neovisionaries', "${prefix}.neovisionaries"
+	relocate 'org.apache.commons.collections4', "${prefix}.collections4"
+	relocate 'gnu.trove', "${prefix}.trove"
+	relocate 'org.jetbrains.annotations', "${prefix}.jetbrains.annotations"
+	relocate 'org.intellij.lang.annotations', "${prefix}.intellij.annotations"
+	mergeServiceFiles()
+	filesMatching(['META-INF/services/**', 'META-INF/*.kotlin_module']) {
+		duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	}
+	exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/versions/9/module-info.class', 'module-info.class'
+	from("LICENSE") {
+		rename { "${it}_sentinel" }
+	}
+}
+
+jar {
+	archiveClassifier = 'slim'
+}
+
+assemble.dependsOn shadowJar

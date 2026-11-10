@@ -1,0 +1,74 @@
+# Sentinel configuration
+#
+# Discord IDs: turn on Developer Mode in Discord (Settings > Advanced),
+# then right-click a server, channel or role and pick "Copy ID".
+# Leave an ID empty ("") to turn that feature off.
+#
+# Run /sentinel reload after editing this file.
+
+[discord]
+# Bot token from the Discord Developer Portal.
+# The SENTINEL_TOKEN environment variable overrides this value.
+token = ""
+# ID of your Discord server.
+guild_id = ""
+
+[whitelist]
+# Channel where players post their Minecraft username.
+channel_id = ""
+# Role given to a player once they are whitelisted.
+add_role_id = ""
+# Role taken away once they are whitelisted (for example "Unverified").
+remove_role_id = ""
+# Reaction added to the message when whitelisting worked.
+success_emoji = "✅"
+# Replies. {username} is the name from the message, {linked} the account
+# the Discord user already whitelisted.
+not_found_message = "username not found"
+already_linked_message = "You already whitelisted **{linked}**. You can't whitelist another account."
+account_taken_message = "**{username}** is already linked to another Discord account."
+error_message = "Something went wrong while whitelisting. Please ask a staff member."
+
+[bans]
+# Channel where /sban posts the ban.
+log_channel_id = ""
+# Role given while the player is banned. Removed again when the ban ends.
+banned_role_id = ""
+# Longest ban /sban accepts, in days.
+max_days = 365
+# How often expired bans are checked, in seconds (5-86400).
+expiry_check_interval = 60
+# Date format for the end of the ban, see
+# https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/format/DateTimeFormatter.html
+date_format = "dd-MM-yyyy HH:mm z"
+# Time zone for the date, for example "Europe/Amsterdam" or "UTC".
+# Empty uses the server's time zone.
+timezone = ""
+# Message posted in the log channel. Placeholders:
+#   {user}    "@discord_name | minecraft_name" (just the Minecraft name when the
+#             player has no linked Discord account)
+#   {player}  Minecraft name
+#   {ends}    end of the ban, formatted with date_format
+#   {days}    length of the ban in days
+#   {reason}  reason given to /sban
+#   {staff}   who ran /sban
+log_message = """
+{user}
+Ban ends: {ends}
+Reason: {reason}"""
+# Shown to the player when they are kicked. Same placeholders.
+kick_message = """
+You are banned from this server until {ends}.
+Reason: {reason}"""
+
+[permissions]
+# Operator level needed for /sban (0-4) when no permissions mod is installed.
+# With a permissions mod, use the nodes sentinel.command.sban and
+# sentinel.command.reload instead.
+sban_level = 3
+reload_level = 4
+# Who may use the /sentinel command in Discord. Members with the Manage Server
+# permission always can. Add role IDs here to let other staff use it too, for
+# example ["123456789012345678"]. They also need to be allowed under
+# Server Settings > Integrations > Sentinel, or Discord hides the command from them.
+discord_admin_role_ids = []

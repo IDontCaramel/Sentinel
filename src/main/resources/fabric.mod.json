@@ -1,0 +1,23 @@
+{
+	"schemaVersion": 1,
+	"id": "sentinel",
+	"version": "${version}",
+	"name": "Sentinel",
+	"description": "Links a Minecraft server to Discord: whitelisting from a Discord channel and timed bans with a Discord role.",
+	"authors": ["I_Dont_Caramel"],
+	"license": "MIT",
+	"icon": "assets/sentinel/icon.png",
+	"environment": "server",
+	"entrypoints": {
+		"server": ["dev.sentinel.Sentinel"]
+	},
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"luckperms": "*"
+	}
+}
